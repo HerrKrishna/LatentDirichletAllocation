@@ -1,0 +1,7 @@
+tau0: 0.01
+kappa: 0.75
+nr_of_topics: 90
+threshold: 0.001
+batch_size: 100
+dataset: nltk
+vocab_size: 10000
