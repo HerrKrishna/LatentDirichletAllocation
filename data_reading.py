@@ -42,15 +42,37 @@ def get_reuters(split):
 
     return docs, lab
 
+def get_corpus(dataset, split):
 
-def get_reddit(dataset, namelist = [], split=1/10):
+    with open('data/' + dataset + '/' + split, 'r') as f:
+        lines = f.readlines()
+    docs = []
+    labels = []
+    for line in lines:
+        line = line.strip('\n')
+        docs.append(line.split('\t')[0].split(' '))
+        labels.append(int(line.split('\t')[1]))
+
+    return docs, labels
+
+
+
+def get_reddit(dataset, namelist = [], n_labels=None):
 
     dir_name = os.path.join('data/', dataset)
     docs = []
     subreddits = []
     seen_subreddits = []
     labels = []
+    count = 0
+
     for filename in os.listdir(dir_name):
+        count += 1
+
+        if n_labels is not None:
+            if count > n_labels:
+                break
+
         if (len(namelist) > 0 and filename not in namelist) or filename.endswith('vocabulary'):
             continue
 
@@ -77,7 +99,8 @@ def get_reddit(dataset, namelist = [], split=1/10):
     labels = list(labels)
 
     full_size = len(docs)
-    train_size = int(full_size * (1-split))
+    test_size = int(full_size / 10)
 
-    return (docs[:train_size], subreddits[:train_size], labels[:train_size]),\
-           (docs[train_size:], subreddits[train_size:], labels[train_size:])
+    return (docs[:8*test_size], subreddits[:8*test_size], labels[:8*test_size]),\
+           (docs[8*test_size:9*test_size], subreddits[8*test_size:9*test_size], labels[8*test_size:9*test_size]),\
+           (docs[9*test_size:], subreddits[9*test_size:], labels[9*test_size:]),

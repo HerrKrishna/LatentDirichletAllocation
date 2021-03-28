@@ -1,9 +1,11 @@
-from convokit import Corpus, download
+from convokit import Corpus, download, download_local
 import sys
 import os
 import spacy
 import nltk
+import shutil
 from nltk.corpus import brown, reuters, gutenberg, stopwords
+from collections import Counter
 
 
 class Vocabulary:
@@ -64,6 +66,7 @@ def prepare_reuters():
     all_categories = reuters.categories()
     print(len(all_categories))
 
+
     for file_id in file_ids:
         categories = reuters.categories(file_id)
         labels = []
@@ -95,19 +98,32 @@ if __name__=='__main__':
     corpus_name = sys.argv[1]
     output_filename = sys.argv[2]
     vocab_size = int(sys.argv[3])
+    
+    nlp = spacy.load('en_core_web_sm')
+    exclude_utterance_meta=['id', 'speaker', 'conversation_id', 'reply_to', 'timestamp']
 
+    word_Counter = Counter()
     count = 0
     for filename in os.listdir('data/reddit_small'):
+        count+=1
+        
+        if filename in os.listdir('data/reddit_big') or filename=='politics':
+            continue
 
         if filename == 'vocabulary':
             continue
 
-        corpus = Corpus(filename=download('subreddit-' + filename))
-        vocabulary = Vocabulary()
+        corpus = Corpus(filename=download('subreddit-' + filename), utterance_end_index=1000) 
+        wordlist = []
+        documents = []
+        for convo_count, convo in enumerate(corpus.iter_conversations()):
+            
+            if convo_count > 1000:
+                break
+            
+            if convo_count % 100 == 0:
+                print(convo_count)
 
-        nlp = spacy.load('en_core_web_sm')
-
-        for convo in corpus.iter_conversations():
             title = convo.meta['title']
             subreddit = convo.meta['subreddit']
             # this gives us the text of the post
@@ -121,22 +137,31 @@ if __name__=='__main__':
                 doc_token_list = []
                 for token in doc:
                     if not token.is_stop and token.is_alpha:
-                        vocabulary.increase_by_one(token.lemma_)
+                        wordlist.append(token.lemma_)
                         doc_token_list.append(token.lemma_)
 
-                # write the document
-                with open(os.path.join(output_filename, subreddit), 'a', encoding='utf-8') as f:
-                    for token in doc_token_list:
-                        f.write(token + ' ')
-                    f.write('\n')
+            documents.append(doc_token_list)
 
-        vocab_list = vocabulary.keep_most(vocab_size)
-        # write the vocabulary
-        with open(os.path.join(output_filename, 'vocabulary'), 'w', encoding='utf-8') as f:
-            f.write('<unk>\n')
-            for token in vocab_list:
-                f.write(token + '\n')
+        # write the document
+        with open(os.path.join(output_filename, subreddit), 'w', encoding='utf-8') as f:
+            for doc_token_list in documents:
+                for token in doc_token_list:
+                    f.write(token + ' ')
+                f.write('\n')
 
-        count += 1
+        word_Counter.update(wordlist)
+        corp_path = download_local('subreddit-' + filename, None)
+        shutil.rmtree(corp_path)
+        os.remove(corp_path + '.zip')
+
+
+    #vocab_list = vocabulary.keep_most(vocab_size)
+    vocab = word_Counter.most_common(vocab_size)
+    # write the vocabulary
+    with open(os.path.join(output_filename, 'vocabulary'), 'w', encoding='utf-8') as f:
+        f.write('<unk>\n')
+        for token in vocab:
+            f.write(token[0] + '\n')
+
 
 

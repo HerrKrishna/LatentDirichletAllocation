@@ -1,0 +1,21 @@
+variable_params:
+        tau0: 
+          - 1
+          - 256
+          - 1024
+        kappa:
+          - 0.5
+          - 0.75
+          - 1
+        nr_of_topics: 
+          - 50
+          - 75
+          - 100
+        threshold:
+          - 0.001
+        batch_size:
+          - 1024
+          - 512
+dataset: reddit_big
+vocab_size: 10000
+n_epochs: 10
