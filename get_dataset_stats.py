@@ -15,5 +15,7 @@ if __name__ == '__main__':
         doc_count += len(lines)
         counter.update({filename:len(lines)})
 
+    print((doc_count/10), doc_count*8/10)
     print(doc_count/70)
+
 

@@ -95,12 +95,10 @@ if __name__=='__main__':
     #prepare_nltk_corpora()
     #prepare_reuters()
     #exit()
-    corpus_name = sys.argv[1]
-    output_filename = sys.argv[2]
-    vocab_size = int(sys.argv[3])
+    output_filename = sys.argv[1]
+    vocab_size = 100000
     
     nlp = spacy.load('en_core_web_sm')
-    exclude_utterance_meta=['id', 'speaker', 'conversation_id', 'reply_to', 'timestamp']
 
     word_Counter = Counter()
     count = 0
