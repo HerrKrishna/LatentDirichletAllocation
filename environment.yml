@@ -1,4 +1,4 @@
-name: test
+name: LDA
 channels:
   - anaconda
   - conda-forge
