@@ -90,7 +90,7 @@ def reddit_exp(config):
         print(lda_result)
         if lda_result > max_score:
             best_lda = lda
-            best_config = config
+            best_config = config.copy()
             max_score = lda_result
     
 
