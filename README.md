@@ -16,7 +16,7 @@ To try other hyperaparameter combinations create a new config file. See hp_searc
 
 To recreate the dataset run:
 
-    python preprocessing <path-to-corpus-directory>
+    python preprocessing/create_dataset.py <path-to-corpus-directory>
     
 This will Download big subreddit corpora from convokit. After every download, the programm will extract what we need and delete
 the corpora again, in order to save disc space.
