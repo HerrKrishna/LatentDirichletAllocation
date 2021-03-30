@@ -1,4 +1,4 @@
-name: LDA
+name: test
 channels:
   - anaconda
   - conda-forge
@@ -109,8 +109,7 @@ dependencies:
     - convokit==2.4.5
     - cycler==0.10.0
     - dill==0.3.3
-    - emoji==1.2.0
-    - en-core-web-sm==3.0.0
+    - emoji==1.2.0   
     - ftfy==5.9
     - joblib==1.0.1
     - kiwisolver==1.3.1
